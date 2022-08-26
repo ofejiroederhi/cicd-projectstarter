@@ -221,7 +221,7 @@ jobs:
       # Here's where you will add some code to rollback on failure   
             
 
-      - run: destroy-environment
+      - destroy-environment
       #     name: Rollback on fail
       #     command: |
 
