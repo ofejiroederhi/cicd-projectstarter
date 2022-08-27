@@ -43,11 +43,11 @@ commands:
             #  npm run migrations:revert
             fi
 
-install_ansible:
-  description: Install Ansible
-  steps:
-    - run:
-        - name: Install Ansible
+  install_ansible:
+    description: Install Ansible
+    steps:
+      - run:
+          name: Install Ansible
           command: |
             sudo apt update
             sudo apt install  software-proprties-common -y
