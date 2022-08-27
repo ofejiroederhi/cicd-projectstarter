@@ -207,11 +207,11 @@ jobs:
           name: Add back-end ip to ansible inventory
           command: |
             # Your code here
-            # exit 1
+
             aws ec2 describe-instances \
             \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
-            --filters "Name=tag:project,Values=udacity" \
+            --filters "Name=tag:project,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
             --output text >> .circleci/ansible/inventory.txt
 
       - persist_to_workspace:
@@ -219,30 +219,41 @@ jobs:
           paths:
             - project/.circleci/ansible/inventory.txt
       # Here's where you will add some code to rollback on failure   
-            
-
       - destroy-environment
-      #     name: Rollback on fail
-      #     command: |
 
-#   configure-infrastructure:
-#     docker:
-#       # Docker image here that supports Ansible
-#     steps:
-#       # Checkout code from git
-#       # Add ssh keys with fingerprint
-#       # attach workspace
-#       - run:
-#           name: Install dependencies
-#           command: |
-#             # Your code here
-#             exit 1
-#       - run:
-#           name: Configure server
-#           command: |
-#             # Your code here
-#             exit 1
-#       # Here's where you will add some code to rollback on failure      
+
+  configure-infrastructure:
+    docker:
+      # Docker image here that supports Ansible
+      - image: python:3.7-alpine3.11
+
+    steps:
+      # Checkout code from git
+      # Add ssh keys with fingerprint
+      # attach workspace
+
+      - checkout
+      - run:
+          name: install openssh
+          command: |
+          apk add openssh
+      
+      - run: yum -y install tar gzip
+
+      - add_ssh_keys:
+            fingerprints: ["XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX"] 
+      - attach_to_workspace:
+          root: ~/
+      
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible
+      - run:
+          name: Configure server
+          command: |
+            ansible-playbook -i inventory.txt configure-server.yml
+      # Here's where you will add some code to rollback on failure      
 
 #   run-migrations:
 #     docker:
