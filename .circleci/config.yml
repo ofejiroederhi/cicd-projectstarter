@@ -241,8 +241,8 @@ jobs:
 
       - add_ssh_keys:
             fingerprints: "30:1a:b3:f9:d3:95:98:73:a3:e2:15:77:82:78:d6:c2"
-      - attach_to_workspace:
-          root: ~/
+      - attach_workspace:
+          at: ~/
       
       - run:
           name: Install dependencies
@@ -251,11 +251,14 @@ jobs:
       - run:
           name: Configure server
           command: |
+            cd .circleci/ansible
+            cat inventory.txt
             ansible-playbook -i inventory.txt configure-server.yml
       # Here's where you will add some code to rollback on failure      
 
 #   run-migrations:
 #     docker:
+#       #-image: circleci/node:13.8.0
 #       # Docker image here that supports NodeJS
 #     steps:
 #       # Checkout code from git
