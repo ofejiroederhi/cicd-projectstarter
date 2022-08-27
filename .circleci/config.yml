@@ -8,6 +8,9 @@ commands:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
       # Add parameter here   
+      workflow_id:
+        default: ${CIRCLE_WORKFLOW_ID:0:7}
+        type: string
     steps:
       - run:
           name: Destroy environments
@@ -23,6 +26,9 @@ commands:
     description: Revert the last migration if successfully run in the current workflow.
     parameters:
       # Add parameter here     
+      workflow_id:
+        default: ${CIRCLE_WORKFLOW_ID:0:7}
+        type: string
     steps:
       - run:
           name: Revert migrations
@@ -235,12 +241,12 @@ jobs:
       - run:
           name: install openssh
           command: |
-          apk add openssh
+            apk add openssh
       
       - run: yum -y install tar gzip
 
       - add_ssh_keys:
-            fingerprints: "30:1a:b3:f9:d3:95:98:73:a3:e2:15:77:82:78:d6:c2"
+            fingerprints: ["30:1a:b3:f9:d3:95:98:73:a3:e2:15:77:82:78:d6:c2"]
       - attach_workspace:
           at: ~/
       
