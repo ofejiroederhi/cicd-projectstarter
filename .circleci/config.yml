@@ -43,6 +43,17 @@ commands:
             #  npm run migrations:revert
             fi
 
+install_ansible:
+  description: Install Ansible
+  steps:
+    - run:
+        - name: Install Ansible
+          command:  |
+            sudo apt update
+            sudo apt install  software-proprties-common -y
+            sudo add-apt-repository --yes --update:ansible/ansible
+            sudo apt install ansible -y
+
 jobs:
 
   notify:
@@ -245,17 +256,15 @@ jobs:
       #     command: |
       #       apk add openssh
       
-      - run: yum -y install tar gzip
+      # - run: yum -y install tar gzip
 
       - add_ssh_keys:
             fingerprints: ["30:1a:b3:f9:d3:95:98:73:a3:e2:15:77:82:78:d6:c2"]
       - attach_workspace:
           at: ~/
       
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --update ansible
+      - install_ansible
+         
       - run:
           name: Configure server
           command: |
