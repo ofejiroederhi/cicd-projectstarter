@@ -48,7 +48,7 @@ install_ansible:
   steps:
     - run:
         - name: Install Ansible
-          command:  |
+          command: |
             sudo apt update
             sudo apt install  software-proprties-common -y
             sudo add-apt-repository --yes --update:ansible/ansible
