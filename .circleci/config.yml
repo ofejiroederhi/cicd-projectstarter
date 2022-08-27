@@ -34,8 +34,7 @@ commands:
             then
             #  cd ~/project/backend
             #  npm install
-            #  Add revert code here. You can find this in the Getting Started section.
-              exit 1
+            #  npm run migrations:revert
             fi
 
 jobs:
@@ -225,7 +224,7 @@ jobs:
   configure-infrastructure:
     docker:
       # Docker image here that supports Ansible
-      - image: python:3.7-alpine3.11
+      - image: cimg/base:stable
 
     steps:
       # Checkout code from git
@@ -241,7 +240,7 @@ jobs:
       - run: yum -y install tar gzip
 
       - add_ssh_keys:
-            fingerprints: ["XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX"] 
+            fingerprints: "30:1a:b3:f9:d3:95:98:73:a3:e2:15:77:82:78:d6:c2"
       - attach_to_workspace:
           root: ~/
       
