@@ -240,10 +240,10 @@ jobs:
       # attach workspace
 
       - checkout
-      - run:
-          name: install openssh
-          command: |
-            apk add openssh
+      # - run:
+      #     name: install openssh
+      #     command: |
+      #       apk add openssh
       
       - run: yum -y install tar gzip
 
