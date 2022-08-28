@@ -245,7 +245,7 @@ jobs:
     docker:
       # Docker image here that supports Ansible
       # - image: cimg/base:stable
-      - image: python:3.7-alpine3.11
+      - image: alpine:latest
 
 
     steps:
@@ -267,14 +267,20 @@ jobs:
           at: ~/
 
       - run:
+          name: install Aws cli
+          command: |
+            apk add --no-cache \
+                python3 \
+                py3-pip \
+            && pip3 install --upgrade pip \
+            && pip3 install \
+                awscli \
+            && rm -rf /var/cache/apk/*
+
+      - run:
           name: install openssh
           command: |
             apk add openssh
-
-      - run:
-          name: install aws cli
-          command: |
-            apk add --no-cache aws-cli
 
       - run:
           name: install aws node
@@ -327,7 +333,7 @@ jobs:
   deploy-frontend:
     docker:
       # Docker image here that supports AWS CLI
-      - image: python:3.7-alpine3.11 #amazon/aws-cli
+      - image: alpine:latest #amazon/aws-cli
     steps:
       # Checkout code from git
       - add_ssh_keys:
@@ -335,6 +341,16 @@ jobs:
 
       - attach_workspace:
           at: ~/
+      - run:
+          name: install Aws cli
+          command: |
+            apk add --no-cache \
+                python3 \
+                py3-pip \
+            && pip3 install --upgrade pip \
+            && pip3 install \
+                awscli \
+            && rm -rf /var/cache/apk/*
 
       - run:
           name: install openssh
@@ -342,15 +358,9 @@ jobs:
             apk add openssh
 
       - run:
-          name: install aws cli
-          command: |
-            apk add --no-cache aws-cli
-
-      - run:
           name: install aws node
           command: |
             apk add --update nodejs npm
-
 
       - run:
           name: Get backend url
@@ -379,7 +389,7 @@ jobs:
   deploy-backend:
     docker:
       # Docker image here that supports Ansible
-      - image: python:3.7-alpine3.11 #amazon/aws-cli
+      - image: alpine:latest #amazon/aws-cli
     steps:
       # Checkout code from git
       # Add ssh keys with fingerprint
@@ -396,12 +406,18 @@ jobs:
             apk add openssh
 
       - run:
-          name: install aws cli
+          name: install Aws cli
           command: |
-            apk add --no-cache aws-cli
+            apk add --no-cache \
+                python3 \
+                py3-pip \
+            && pip3 install --upgrade pip \
+            && pip3 install \
+                awscli \
+            && rm -rf /var/cache/apk/*
 
       - run:
-          name: install aws node
+          name: install node
           command: |
             apk add --update nodejs npm
 
