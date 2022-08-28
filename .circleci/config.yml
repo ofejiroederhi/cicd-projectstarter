@@ -244,15 +244,10 @@ jobs:
   configure-infrastructure:
     docker:
       # Docker image here that supports Ansible
-      # - image: cimg/base:stable
-      - image: alpine:latest
+      - image: python:3.7-alpine3.16
 
 
     steps:
-      # Checkout code from git
-      # Add ssh keys with fingerprint
-      # attach workspace
-
       - checkout
       # - run:
       #     name: install openssh
@@ -262,37 +257,43 @@ jobs:
       # - run: yum -y install tar gzip
 
       - add_ssh_keys:
-            fingerprints: ["30:1a:b3:f9:d3:95:98:73:a3:e2:15:77:82:78:d6:c2"]
+          fingerprints: ["30:1a:b3:f9:d3:95:98:73:a3:e2:15:77:82:78:d6:c2"]
+
+      - run:
+          name: install dependencies
+          command: |
+            apk add --update --no-cache tar gzip ansible awscli
+
       - attach_workspace:
           at: ~/
+  
+      # - run:
+      #     name: install Aws cli
+      #     command: |
+      #       apk add --no-cache \
+      #           python3 \
+      #           py3-pip \
+      #       && pip3 install --upgrade pip \
+      #       && pip3 install \
+      #           awscli \
+      #       && rm -rf /var/cache/apk/*
 
-      - run:
-          name: install Aws cli
-          command: |
-            apk add --no-cache \
-                python3 \
-                py3-pip \
-            && pip3 install --upgrade pip \
-            && pip3 install \
-                awscli \
-            && rm -rf /var/cache/apk/*
+      # - run:
+      #     name: install openssh
+      #     command: |
+      #       apk add openssh
 
-      - run:
-          name: install openssh
-          command: |
-            apk add openssh
-
-      - run:
-          name: install aws node
-          command: |
-            apk add --update nodejs npm
+      # - run:
+      #     name: install aws node
+      #     command: |
+      #       apk add --update nodejs npm
       
-      # - install_ansible
-      - run:
-          name: Install ansible
-          command: |
-            # install the dependencies needed for your playbook
-            apk add --update ansible 
+      # # - install_ansible
+      # - run:
+      #     name: Install ansible
+      #     command: |
+      #       # install the dependencies needed for your playbook
+      #       apk add --update ansible 
          
       - run:
           name: Configure server
@@ -304,7 +305,7 @@ jobs:
 
   run-migrations:
     docker:
-      - image: python33.7-alpine3.16
+      - image: python:3.7-alpine3.16
       # Docker image here that supports NodeJS
     steps:
 
