@@ -305,8 +305,9 @@ jobs:
 
   run-migrations:
     docker:
-      - image: python:3.7-alpine3.16
-      # Docker image here that supports NodeJS
+      # - image: python:3.7-alpine3.16
+      - image: circleci/node:13.8.0
+
     steps:
 
       # Checkout code from git
@@ -314,7 +315,12 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            apk add --update --no-cache tar gzip nodejs npm aws-cli curl
+            # apk add --update --no-cache tar gzip nodejs npm aws-cli curl
+            sudo apt install -y tar gzip curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip -qq awscliv2.zip
+            sudo ./aws/install
+      - restore_cache:
+          keys: [backend-build]
 
       - run:
           name: Run migrations
@@ -339,6 +345,7 @@ jobs:
   deploy-frontend:
     docker:
       - image: python:3.7-alpine3.16
+      # - image: circleci/node:13.8.0
       # Docker image here that supports NodeJS
     steps:
 
@@ -348,6 +355,7 @@ jobs:
           name: install dependencies
           command: |
             apk add --update --no-cache tar gzip nodejs npm aws-cli curl
+            
 
       - add_ssh_keys:
           fingerprints: ["30:1a:b3:f9:d3:95:98:73:a3:e2:15:77:82:78:d6:c2"]
