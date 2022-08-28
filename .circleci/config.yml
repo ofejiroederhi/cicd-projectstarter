@@ -32,15 +32,16 @@ commands:
     steps:
       - run:
           name: Revert migrations
+          when: on_fail
           # Add when this will run
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS = 1
+            SUCCESS = curl --insecure https://kvdb.io/15T8VZSNs34qtHcpUvsRFssN/migration_${CIRCLE_WORKFLOW_ID:0:7}
             if(( $SUCCESS==1 )); 
             then
-            #  cd ~/project/backend
-            #  npm install
-            #  npm run migrations:revert
+             cd ~/project/backend
+             npm install
+             npm run migrations:revert
             fi
 
   install_ansible:
@@ -295,10 +296,10 @@ jobs:
                   # curl -H "Content-Type: text/plain" -H "token: 7933fe63-4687-4fa1-8426-aa25aa1730ec" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
                   # If you are using kvdb.io, generate the bucket ID "15T8VZSNs34qtHcpUvsRFssN" in your local terminal first
                   curl https://kvdb.io/15T8VZSNs34qtHcpUvsRFssN/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
-                  curl --insecure https://kvdb.io/15T8VZSNs34qtHcpUvsRFssN/migration_${CIRCLE_WORKFLOW_ID:0:7}
               fi
      # Here's where you will add some code to rollback on failure    
       - destroy-environment
+      - revert-migration
 
   deploy-frontend:
     docker:
@@ -306,6 +307,9 @@ jobs:
       - image: python:3.7-alpine3.11 #amazon/aws-cli
     steps:
       # Checkout code from git
+      - add_ssh_keys:
+          fingerprints: ["30:1a:b3:f9:d3:95:98:73:a3:e2:15:77:82:78:d6:c2"]
+
       - attach_workspace:
           at: ~/
 
@@ -346,7 +350,7 @@ jobs:
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       # Here's where you will add some code to rollback on failure  
-      - destroy-environments
+      - destroy-environment
       - revert-migration
                     
   deploy-backend:
@@ -357,6 +361,9 @@ jobs:
       # Checkout code from git
       # Add ssh keys with fingerprint
       # attach workspace      
+      - add_ssh_keys:
+          fingerprints: ["30:1a:b3:f9:d3:95:98:73:a3:e2:15:77:82:78:d6:c2"]
+
       - attach_workspace:
           at: ~/
 
@@ -389,7 +396,7 @@ jobs:
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml# your code here
       # Here's where you will add some code to rollback on failure  
-      - destroy-environments
+      - destroy-environment
       - revert-migration
 
 # smoke-test:
