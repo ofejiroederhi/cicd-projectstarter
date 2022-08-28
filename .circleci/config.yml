@@ -304,7 +304,7 @@ jobs:
 
   run-migrations:
     docker:
-      - image: circleci/node:4.15.0 #13.8.0
+      - image: circleci/node:14.15.0
       # Docker image here that supports NodeJS
     steps:
 
@@ -314,7 +314,7 @@ jobs:
           name: Run migrations
           command: |
             cd backend
-            sudo npm install -g npm
+            sudo npm install -g
             sudo npm run migrations > migrations_dump.txt
       - run:
           name: Send migration status to kvdb.io OR memstash.io
