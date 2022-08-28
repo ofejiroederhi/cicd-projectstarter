@@ -243,7 +243,9 @@ jobs:
   configure-infrastructure:
     docker:
       # Docker image here that supports Ansible
-      - image: cimg/base:stable
+      # - image: cimg/base:stable
+      - image: python:3.7-alpine3.11
+
 
     steps:
       # Checkout code from git
@@ -262,8 +264,28 @@ jobs:
             fingerprints: ["30:1a:b3:f9:d3:95:98:73:a3:e2:15:77:82:78:d6:c2"]
       - attach_workspace:
           at: ~/
+
+      - run:
+          name: install openssh
+          command: |
+            apk add openssh
+
+      - run:
+          name: install aws cli
+          command: |
+            apk add --no-cache aws-cli
+
+      - run:
+          name: install aws node
+          command: |
+            apk add --update nodejs npm
       
-      - install_ansible
+      # - install_ansible
+      - run:
+          name: Install ansible
+          command: |
+            # install the dependencies needed for your playbook
+            apk add --update ansible 
          
       - run:
           name: Configure server
