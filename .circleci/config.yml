@@ -84,7 +84,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-build]
+          keys: [frontendbuild]
       - run:
           name: Build front-end
           command: |
@@ -94,7 +94,7 @@ jobs:
           # exit 1
       - save_cache:
           paths: [frontend/node_modules]
-          key: frontend-build
+          key: frontendbuild
 
   build-backend:
     docker:
@@ -102,7 +102,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build]
+          keys: [backendbuild]
       - run:
           name: Back-end build
           command: |
@@ -112,7 +112,7 @@ jobs:
             #  exit 1
       - save_cache:
           paths: [backend/node_modules]
-          key: backend-build
+          key: backendbuild
 
   test-frontend:
     docker:
@@ -122,7 +122,7 @@ jobs:
       - checkout
       # Restore from cache
       - restore_cache:
-          keys: [frontend-build]
+          keys: [frontendbuild]
       - run:
           name: front-end test
           command: |
@@ -139,7 +139,7 @@ jobs:
       - checkout
       # Restore from cache
       - restore_cache:
-          keys: [backend-build]
+          keys: [backendbuild]
       
       - run:
           name: run back-end test
@@ -157,7 +157,7 @@ jobs:
       - checkout
       # Restore from cache
       - restore_cache:
-          keys: [frontend-build]
+          keys: [frontendbuild]
       # Your job code here
       - run:
           name: scan front-end
@@ -179,7 +179,7 @@ jobs:
       - checkout
       # Restore from cache
       - restore_cache:
-          keys: [backend-build]
+          keys: [backendbuild]
       # Your job code here
       - run:
           name: scan back-end
@@ -322,13 +322,13 @@ jobs:
             sudo ./aws/install
 
       - restore_cache:
-          keys: [backend-build]
+          keys: [backendbuild]
 
       - run:
           name: Run migrations
           command: |
             cd backend
-            npm run migrations >> migrations.txt
+            npm run migrations > migrations.txt
       - run:
           name: Send migration status to kvdb.io OR memstash.io
           command: |   
@@ -395,7 +395,7 @@ jobs:
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
       - restore_cache:
-          keys: [frontend-build]
+          keys: [frontendbuild]
       - run:
           name: Deploy frontend objects
           command: |
@@ -428,7 +428,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - restore_cache:
-          keys: [frontend-build ]
+          keys: [frontendbuild ]
 
       - run:
           name: Deploy backend
