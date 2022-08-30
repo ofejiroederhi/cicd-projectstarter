@@ -16,7 +16,7 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            # Your code here
+            aws s3 rb s3://udapeople-<<parameters.workflow_id>> --force  
             aws cloudformation delete-stack \
             --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
             aws cloudformation delete-stack \
@@ -337,9 +337,9 @@ jobs:
                 # If you are using kvdb.io, generate the bucket ID "15T8VZSNs34qtHcpUvsRFssN" in your local terminal first
                   curl https://kvdb.io/15T8VZSNs34qtHcpUvsRFssN/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
               fi
-     # Here's where you will add some code to rollback on failure    
+     # Here's where you will add some code to rollback on failure   
+      - revert-migrations 
       - destroy-environment
-      - revert-migrations
 
   deploy-frontend:
     docker:
@@ -409,8 +409,8 @@ jobs:
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       # Here's where you will add some code to rollback on failure  
-      - destroy-environment
       - revert-migrations
+      - destroy-environment
                     
   deploy-backend:
     docker:
@@ -437,20 +437,19 @@ jobs:
           name: Deploy backend
           command: |
             cd backend
-            npm i
+            npm install
             npm run build
             cd ..
-            # Zip the directory
             tar -C backend -czvf artifact.tar.gz . 
             mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
             mv artifact.tar.gz .circleci/ansible/roles/deploy/files/artifacts.tar.gz
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
-            ansible-playbook -i inventory.txt deploy-backend.yml# your code here
+            ansible-playbook -i inventory.txt deploy-backend.yml
       # Here's where you will add some code to rollback on failure  
-      - destroy-environment
       - revert-migrations
+      - destroy-environment
 
   smoke-test:
     docker:
@@ -498,8 +497,8 @@ jobs:
               return 1
             fi
       # Here's where you will add some code to rollback on failure  
-      - destroy-environment
       - revert-migrations
+      - destroy-environment
 
   # cloudfront-update:
   #   docker:
