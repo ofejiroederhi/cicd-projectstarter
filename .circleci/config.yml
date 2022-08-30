@@ -16,7 +16,7 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            aws s3 rb s3://udapeople-<<parameters.workflow_id>> --recursive
+            aws s3 rm s3://udapeople-<<parameters.workflow_id>> --recursive
             aws cloudformation delete-stack \
             --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
             aws cloudformation delete-stack \
@@ -37,7 +37,7 @@ commands:
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
             SUCCESS = curl --insecure https://kvdb.io/UNxKqPvA9G5pHDPZBZNriz/migration_${CIRCLE_WORKFLOW_ID:0:7}
-            if(( $SUCCESS==1 )); 
+            if(( $SUCCESS!=1 )); 
             then
              cd ~/project/backend
              npm install
