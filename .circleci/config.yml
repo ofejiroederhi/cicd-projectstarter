@@ -511,12 +511,7 @@ jobs:
             # Fetch and prepare the BACKEND_IP env var
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
-            if curl --connect-timeout 5 -s "${API_URL}/api/status" | grep "ok"
-            then
-                return 0
-            else
-                return 1
-            fi
+            if curl --connection-timeout 5 -s "${API_URL}/api/status" | grep "ok"; then return 0; else return 1; fi
 
       - run:
           name: Frontend smoke test.
@@ -530,8 +525,8 @@ jobs:
               return 1
             fi
       # Here's where you will add some code to rollback on failure  
-      # - destroy-environment
-      # - revert-migrations
+      - destroy-environment
+      - revert-migrations
       
 
   # cloudfront-update:
