@@ -257,7 +257,7 @@ jobs:
       # - run: yum -y install tar gzip
 
       - add_ssh_keys:
-          fingerprints: ["30:1a:b3:f9:d3:95:98:73:a3:e2:15:77:82:78:d6:c2"]
+          fingerprints: ["b8:d6:35:24:fd:78:ee:3c:f5:62:e0:2d:80:5b:5b:8e"]
 
       - run:
           name: install dependencies
@@ -377,7 +377,7 @@ jobs:
             
 
       - add_ssh_keys:
-          fingerprints: ["30:1a:b3:f9:d3:95:98:73:a3:e2:15:77:82:78:d6:c2"]
+          fingerprints: ["b8:d6:35:24:fd:78:ee:3c:f5:62:e0:2d:80:5b:5b:8e"]
 
       - attach_workspace:
           at: ~/
@@ -446,7 +446,7 @@ jobs:
             apk add --update --no-cache tar gzip nodejs npm ansible aws-cli curl
 
       - add_ssh_keys:
-          fingerprints: ["30:1a:b3:f9:d3:95:98:73:a3:e2:15:77:82:78:d6:c2"]
+          fingerprints: ["b8:d6:35:24:fd:78:ee:3c:f5:62:e0:2d:80:5b:5b:8e"]
 
       - restore_cache:
           keys: [backendbuild]
@@ -487,7 +487,7 @@ jobs:
             apk add --update --no-cache tar gzip nodejs npm aws-cli curl
       
       - add_ssh_keys:
-          fingerprints: ["30:1a:b3:f9:d3:95:98:73:a3:e2:15:77:82:78:d6:c2"]
+          fingerprints: ["b8:d6:35:24:fd:78:ee:3c:f5:62:e0:2d:80:5b:5b:8e"]
 
       - attach_workspace:
           at: ~/
@@ -511,7 +511,7 @@ jobs:
             # Fetch and prepare the BACKEND_IP env var
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
-            if curl --connect-timeout 5 "${API_URL}/api/status" | grep "ok"; then exit 0; else exit 1; fi
+            if curl --connect-timeout 5 "${API_URL}/api/status" | grep "ok"; then return 0; else return 1; fi
 
       - run:
           name: Frontend smoke test.
@@ -520,9 +520,9 @@ jobs:
             echo ${URL} 
             if curl -s ${URL} | grep "Welcome"
             then
-              exit 1
+              return 1
             else
-              exit 1
+              return 1
             fi
       # Here's where you will add some code to rollback on failure  
       - destroy-environment
