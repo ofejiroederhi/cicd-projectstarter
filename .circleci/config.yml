@@ -16,7 +16,7 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            aws s3 rb s3://udapeople-<<parameters.workflow_id>> --force  
+            aws s3 rb s3://udapeople-<<parameters.workflow_id>> --recursive
             aws cloudformation delete-stack \
             --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
             aws cloudformation delete-stack \
@@ -497,8 +497,9 @@ jobs:
               return 1
             fi
       # Here's where you will add some code to rollback on failure  
-      - revert-migrations
       - destroy-environment
+      - revert-migrations
+      
 
   # cloudfront-update:
   #   docker:
