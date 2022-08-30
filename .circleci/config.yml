@@ -512,7 +512,8 @@ jobs:
             # Fetch and prepare the BACKEND_IP env var
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
-            if curl --connect-timeout 5 "${API_URL}/api/status" | grep "ok"; then return 0; else return 1; fi
+            if curl "${API_URL}/api/status" | grep "ok"; then return 0; else return 1; fi
+            no_output_timeout: 1m
 
       - run:
           name: Frontend smoke test.
