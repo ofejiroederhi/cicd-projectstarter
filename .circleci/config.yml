@@ -298,10 +298,26 @@ jobs:
       - run:
           name: Configure server
           command: |
+            echo NODE_ENV: production >> backend/.env
+            echo ENVIRONMENT: production >> backend/.env
+            echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> backend/.env
+            echo TYPEORM_ENTITIES=$TYPEORM_ENTITIES >> backend/.env
+            echo TYPEORM_HOST=$TYPEORM_HOST >> backend/.env
+            echo TYPEORM_PORT: 5432 >> backend/.env
+            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> backend/.env
+            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> backend/.env
+            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> backend/.env
+            echo TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS >> backend/.env
+            echo TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR >> backend/.env
+            cat backend/.env
             cd .circleci/ansible
             cat inventory.txt
             ansible-playbook -i inventory.txt configure-server.yml
       # Here's where you will add some code to rollback on failure      
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/backend
 
   run-migrations:
     docker:
@@ -323,6 +339,9 @@ jobs:
 
       - restore_cache:
           keys: [backendbuild]
+
+      - attach_workspace:
+          at: ~/
 
       - run:
           name: Run migrations
@@ -429,10 +448,11 @@ jobs:
       - add_ssh_keys:
           fingerprints: ["30:1a:b3:f9:d3:95:98:73:a3:e2:15:77:82:78:d6:c2"]
 
+      - restore_cache:
+          keys: [backendbuild]
+      
       - attach_workspace:
           at: ~/
-      - restore_cache:
-          keys: [frontendbuild ]
 
       - run:
           name: Deploy backend
