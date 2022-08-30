@@ -465,6 +465,12 @@ jobs:
           name: install dependencies
           command: |
             apk add --update --no-cache tar gzip nodejs npm aws-cli curl
+      
+      - add_ssh_keys:
+          fingerprints: ["30:1a:b3:f9:d3:95:98:73:a3:e2:15:77:82:78:d6:c2"]
+
+      - attach_workspace:
+          at: ~/
             
       - run:
           name: Get backend url
