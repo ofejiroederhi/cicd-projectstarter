@@ -530,8 +530,8 @@ jobs:
               return 1
             fi
       # Here's where you will add some code to rollback on failure  
-      - destroy-environment
-      - revert-migrations
+      # - destroy-environment
+      # - revert-migrations
       
 
   # cloudfront-update:
