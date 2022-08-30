@@ -21,7 +21,6 @@ commands:
             --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
             aws cloudformation delete-stack \
             --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
-
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
     parameters:
@@ -43,7 +42,6 @@ commands:
              npm install
              npm run migrations:revert
             # fi
-
   install_ansible:
     description: Install Ansible
     steps:
@@ -54,7 +52,6 @@ commands:
             sudo apt install software-properties-common -y
             sudo add-apt-repository --yes --update ppa:ansible/ansible
             sudo apt install ansible -y
-
 jobs:
 
   notify:
@@ -129,7 +126,6 @@ jobs:
               cd frontend
               npm install
               npm run test
-
   test-backend:
     docker:
       # Docker image here
@@ -169,7 +165,6 @@ jobs:
             # If the "npm audit fix" command above could not fix all critical vulnerabilities, try “npm audit fix --force” again
             npm audit fix --force
             npm audit --audit-level=critical
-
   scan-backend:
     docker:
       # Docker image here
@@ -191,7 +186,6 @@ jobs:
             # If the "npm audit fix" command above could not fix all critical vulnerabilities, try “npm audit fix --force” again
             npm audit fix --audit-level=critical --force
             npm audit --audit-level=critical
-
   deploy-infrastructure:
     docker:
       # Docker image here that supports AWS CLI
@@ -220,7 +214,6 @@ jobs:
               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
               # exit 1
-
       - run:
           name: Add back-end ip to ansible inventory
           command: |
@@ -232,7 +225,6 @@ jobs:
             --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
             --output text >> inventory.txt
             cat inventory.txt
-
       - persist_to_workspace:
           root: ~/
           paths:
@@ -263,7 +255,6 @@ jobs:
           name: install dependencies
           command: |
             apk add --update --no-cache tar gzip ansible aws-cli
-
       - attach_workspace:
           at: ~/
   
@@ -336,7 +327,6 @@ jobs:
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip -qq awscliv2.zip
             sudo ./aws/install
-
       - restore_cache:
           keys: [backendbuild]
 
@@ -375,7 +365,6 @@ jobs:
           command: |
             apk add --update --no-cache tar gzip nodejs npm aws-cli curl
             
-
       - add_ssh_keys:
           fingerprints: ["b8:d6:35:24:fd:78:ee:3c:f5:62:e0:2d:80:5b:5b:8e"]
 
@@ -444,7 +433,6 @@ jobs:
           name: install dependencies
           command: |
             apk add --update --no-cache tar gzip nodejs npm ansible aws-cli curl
-
       - add_ssh_keys:
           fingerprints: ["b8:d6:35:24:fd:78:ee:3c:f5:62:e0:2d:80:5b:5b:8e"]
 
@@ -503,7 +491,7 @@ jobs:
       #         --output text)
 
       - run:
-          name: Backend smoke test
+          name: Backend smoke test.
           command: |
             export BACKEND_IP=$(aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
@@ -513,7 +501,6 @@ jobs:
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
             if curl --connect-timeout 5 "${API_URL}/api/status" | grep "ok"; then return 0; else return 1; fi
-
       - run:
           name: Frontend smoke test.
           command: |
@@ -521,7 +508,7 @@ jobs:
             echo ${URL} 
             if curl -s ${URL} | grep "Welcome"
             then
-              return 0
+              return 1
             else
               return 1
             fi
@@ -530,63 +517,39 @@ jobs:
       - revert-migrations
       
 
-  cloudfront-update:
-    docker:
-      - image: amazon/aws-cli
-    steps:
-      # Checkout code from git
-      - checkout
-      - run: yum -y install tar gzip nodejs npm
+  # cloudfront-update:
+  #   docker:
+  #     # Docker image here that supports AWS CLI
+  #   steps:
+  #     # Checkout code from git
+  #     - run:
+  #         name: Install dependencies
+  #         command: |
+  #           # your code here
+  #     - run:
+  #         name: Update cloudfront distribution
+  #         command: |
+  #           # your code here
+  #     # Here's where you will add some code to rollback on failure  
 
-      # - run:
-      #     name: Install dependencies
-      #     command: |
-      #       sudo apt install nodejs npm
-      - run:
-          name: Update cloudfront distribution
-          command: |
-            aws cloudformation deploy \
-            --template-file .circleci/files/cloudfront.yml \
-            --stack-name InitialStack \
-            --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
-            --tags project=udapeople
-      # Here's some code to rollback on failure  
-      - destroy-environment
-      - revert-migrations
-
-  cleanup:
-    docker:
-      - image: amazon/aws-cli
-    steps:
-      # Checkout code from git
-      - checkout
-
-      - run:
-          name: Get old stack workflow id
-          command: |
-            # your code here
-            export OldWorkflowID="the id here"
-            export STACKS=[] #put the list of stacks here
-            # Fetch the Old workflow ID
-            export OldWorkflowID=$(aws cloudformation \
-                    list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
-                    --no-paginate --output text)
-            echo OldWorkflowID: "${OldWorkflowID}"
-            echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
-            # Fetch the stack names          
-            export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
-                    --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
-            echo Stack names: "${STACKS[@]}" 
-
-      - run:
-          name: Remove old stacks and files
-          command: |
-            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
-            then
-              aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
-              aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
-              aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
-            fi
+# cleanup:
+#     docker:
+#       # Docker image here
+#     steps:
+#       # Checkout code from git
+#       - run:
+#           name: Get old stack workflow id
+#           command: |
+#             # your code here
+#             export OldWorkflowID="the id here"
+#             export STACKS=[] #put the list of stacks here
+#       - run:
+#           name: Remove old stacks and files
+#           command: |
+#             if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+#             then
+#               # your code here
+#             fi
             
 
 workflows:
@@ -617,9 +580,9 @@ workflows:
           requires: [run-migrations]
       - smoke-test:
           requires: [deploy-backend, deploy-frontend]
-      - cloudfront-update:
-          requires: [smoke-test]
-      - cleanup:
-          requires: [cloudfront-update]
+      # - cloudfront-update:
+      #     requires: [smoke-test]
+      # - cleanup:
+      #     requires: [cloudfront-update]
       - notify:
           context: MySlack
