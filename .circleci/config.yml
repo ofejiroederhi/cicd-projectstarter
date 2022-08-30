@@ -36,13 +36,13 @@ commands:
           # Add when this will run
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS = curl --insecure https://kvdb.io/UNxKqPvA9G5pHDPZBZNriz/migration_${CIRCLE_WORKFLOW_ID:0:7}
-            if(( $SUCCESS!=1 )); 
-            then
+            # SUCCESS = curl --insecure https://kvdb.io/UNxKqPvA9G5pHDPZBZNriz/migration_${CIRCLE_WORKFLOW_ID:0:7}
+            # if(( $SUCCESS!=1 )); 
+            # then
              cd ~/project/backend
              npm install
              npm run migrations:revert
-            fi
+            # fi
 
   install_ansible:
     description: Install Ansible
@@ -486,6 +486,7 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
+            echo "${API_URL}"
             if curl "${API_URL}/api/status" | grep "ok"
             then
                 return 0
