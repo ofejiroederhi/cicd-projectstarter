@@ -199,8 +199,12 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
+
       - run: yum -y install tar gzip
       
+      - add_ssh_keys:
+          fingerprints: ["b8:d6:35:24:fd:78:ee:3c:f5:62:e0:2d:80:5b:5b:8e"]
+
       - run:
           name: Ensure back-end infrastructure exists
           command: |
@@ -209,7 +213,7 @@ jobs:
               --tags project=udapeople \
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
-              # exit 1
+
               
       - run:
           name: Ensure front-end infrastructure exist
@@ -219,7 +223,7 @@ jobs:
               --tags project=udapeople \
               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
-              # exit 1
+
 
       - run:
           name: Add back-end ip to ansible inventory
@@ -578,13 +582,7 @@ jobs:
       - checkout
 
       - attach_workspace:
-          at: ~/
-
-      - run:
-          name:
-          command: |
-            # Fetch the stack names          
-
+          at: ~/     
 
       - run:
           name: Remove old stacks and files
