@@ -580,9 +580,11 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
-
+      
+      - run: yum -y install tar gzip
+      
       - attach_workspace:
-          at: ~/     
+          at: ~/
 
       - run:
           name: Remove old stacks and files
@@ -597,7 +599,9 @@ jobs:
               aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
             fi
-            
+
+      - destroy-environment
+      - revert-migrations      
 
 workflows:
   default:
