@@ -201,6 +201,9 @@ jobs:
       - checkout
       - run: yum -y install tar gzip
       
+      - add_ssh_keys:
+          fingerprints: ["b8:d6:35:24:fd:78:ee:3c:f5:62:e0:2d:80:5b:5b:8e"]
+
       - run:
           name: Ensure back-end infrastructure exists
           command: |
