@@ -118,7 +118,6 @@ jobs:
     docker:
       - image: circleci/node:13.8.0
     steps:
-      # Checkout code from git
       - checkout
       # Restore from cache
       - restore_cache:
@@ -134,8 +133,7 @@ jobs:
     docker:
       # Docker image here
       - image: circleci/node:13.8.0
-    steps:
-      # Checkout code from git
+    steps:     
       - checkout
       # Restore from cache
       - restore_cache:
@@ -152,8 +150,7 @@ jobs:
     docker:
       # Docker image here
       - image: circleci/node:13.8.0
-    steps:
-      # Checkout code from git
+    steps:      
       - checkout
       # Restore from cache
       - restore_cache:
@@ -174,8 +171,7 @@ jobs:
     docker:
       # Docker image here
       - image: circleci/node:13.8.0
-    steps:
-      # Checkout code from git
+    steps:      
       - checkout
       # Restore from cache
       - restore_cache:
@@ -196,8 +192,7 @@ jobs:
     docker:
       # Docker image here that supports AWS CLI
       - image: amazon/aws-cli
-    steps:
-      # Checkout code from git
+    steps:      
       - checkout
 
       - run: yum -y install tar gzip
@@ -247,7 +242,6 @@ jobs:
 
   configure-infrastructure:
     docker:
-      # Docker image here that supports Ansible
       - image: python:3.7-alpine3.16
 
 
@@ -329,8 +323,6 @@ jobs:
       - image: circleci/node:13.8.0
 
     steps:
-
-      # Checkout code from git
       - checkout
       - run:
           name: install dependencies
@@ -370,9 +362,7 @@ jobs:
       - image: python:3.7-alpine3.16
       # - image: circleci/node:13.8.0
       # Docker image here that supports NodeJS
-    steps:
-
-      # Checkout code from git
+    steps:      
       - checkout
       - run:
           name: install dependencies
@@ -440,9 +430,7 @@ jobs:
     docker:
       - image: python:3.7-alpine3.16
       # Docker image here that supports NodeJS
-    steps:
-
-      # Checkout code from git
+    steps:      
       - checkout
       - run:
           name: install dependencies
@@ -481,9 +469,7 @@ jobs:
       - image: python:3.7-alpine3.16
       # - image: circleci/node:13.8.0
       # Docker image here that supports NodeJS
-    steps:
-
-      # Checkout code from git
+    steps:      
       - checkout
 
       - attach_workspace:
@@ -539,7 +525,6 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
-      # Checkout code from git
       - checkout
       - run: yum -y install tar gzip nodejs npm
 
@@ -568,7 +553,7 @@ jobs:
             aws cloudformation deploy \
             --template-file .circleci/files/cloudfront.yml \
             --stack-name InitialStack \
-            --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
             --tags project=udapeople
       # Here's some code to rollback on failure  
       - destroy-environment
@@ -577,8 +562,7 @@ jobs:
   cleanup:
     docker:
       - image: amazon/aws-cli
-    steps:
-      # Checkout code from git
+    steps:     
       - checkout
       
       - run: yum -y install tar gzip
@@ -597,7 +581,7 @@ jobs:
             echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
             echo Stack names: "${STACKS[@]}" 
 
-            if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
+            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
             then
               echo "----------Delete Confirmed and Initiated----------"
               aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
