@@ -1,7 +1,8 @@
 - name: Add the node-exporter
+  become: true 
   ansible.builtin.user:
     name: node-exporter
-    createhome: no
+    createhome: false
 
 - name: "install node exporter."
   unarchive:
